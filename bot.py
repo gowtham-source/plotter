@@ -23,33 +23,23 @@ else:
 
 logger = logging.getLogger(__name__)
 
-# Configure matplotlib to use Times New Roman font
 def setup_font():
+    """Configure matplotlib to use Times New Roman font (with Liberation Serif fallback)"""
     try:
-        # Add Times New Roman font
-        font_path = '/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf'
-        if os.path.exists(font_path):
-            fm.fontManager.addfont(font_path)
-            plt.rcParams['font.family'] = 'Times New Roman'
-            logger.info("Times New Roman font configured successfully")
-        else:
-            logger.warning(f"Font file not found at {font_path}")
+        # Set font preferences with fallback chain
+        plt.rcParams['font.family'] = 'serif'
+        plt.rcParams['font.serif'] = ['Times New Roman', 'Liberation Serif', 'DejaVu Serif', 'serif']
+        
+        # Test if any serif font is available
+        fig, ax = plt.subplots(figsize=(1, 1))
+        ax.text(0.5, 0.5, 'Test', fontfamily='serif')
+        plt.close(fig)
+        
+        logger.info("Font configuration completed successfully")
     except Exception as e:
-        logger.error(f"Error setting up font: {e}")
-
-# Setup font configuration
-def setup_font():
-    try:
-        # Add Times New Roman font
-        font_path = '/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf'
-        if os.path.exists(font_path):
-            fm.fontManager.addfont(font_path)
-            plt.rcParams['font.family'] = 'Times New Roman'
-            logger.info("Times New Roman font configured successfully")
-        else:
-            logger.warning(f"Font file not found at {font_path}")
-    except Exception as e:
-        logger.error(f"Error setting up font: {e}")
+        logger.warning(f"Could not configure fonts: {e}")
+        # Fallback to matplotlib defaults
+        plt.rcParams['font.family'] = 'sans-serif'
 
 # Execute the plotting code safely and return the generated images
 async def run_plot_code(code):

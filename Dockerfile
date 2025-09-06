@@ -5,29 +5,30 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    ttf-mscorefonts-installer \
     fontconfig \
     wget \
-    cabextract \
+    unzip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Accept EULA for MS fonts
-RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
+# Install Microsoft fonts using Liberation fonts as fallback
+RUN apt-get update && apt-get install -y \
+    fonts-liberation \
+    fonts-dejavu-core \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && fc-cache -fv
 
-# Install MS fonts (alternative method if the package doesn't work)
-RUN mkdir -p /usr/share/fonts/truetype/msttcorefonts
-RUN wget -q -O /tmp/fonts.tar.gz https://sourceforge.net/projects/corefonts/files/the%20fonts/final/arial32.exe/download \
-    && cabextract -q -d /tmp /tmp/fonts.tar.gz \
-    && cabextract -q -d /usr/share/fonts/truetype/msttcorefonts /tmp/*.cab \
-    && rm -rf /tmp/*
-
-RUN wget -q -O /tmp/times32.exe https://sourceforge.net/projects/corefonts/files/the%20fonts/final/times32.exe/download \
-    && cabextract -q -d /usr/share/fonts/truetype/msttcorefonts /tmp/times32.exe \
-    && rm -rf /tmp/*
-
-# Update font cache
-RUN fc-cache -f -v
+# Create font configuration to map Times New Roman to Liberation Serif
+RUN mkdir -p /etc/fonts/conf.d && \
+    echo '<?xml version="1.0"?>' > /etc/fonts/conf.d/30-metric-aliases.conf && \
+    echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> /etc/fonts/conf.d/30-metric-aliases.conf && \
+    echo '<fontconfig>' >> /etc/fonts/conf.d/30-metric-aliases.conf && \
+    echo '  <alias>' >> /etc/fonts/conf.d/30-metric-aliases.conf && \
+    echo '    <family>Times New Roman</family>' >> /etc/fonts/conf.d/30-metric-aliases.conf && \
+    echo '    <prefer><family>Liberation Serif</family></prefer>' >> /etc/fonts/conf.d/30-metric-aliases.conf && \
+    echo '  </alias>' >> /etc/fonts/conf.d/30-metric-aliases.conf && \
+    echo '</fontconfig>' >> /etc/fonts/conf.d/30-metric-aliases.conf
 
 # Copy requirements file
 COPY requirements.txt .

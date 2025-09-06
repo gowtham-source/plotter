@@ -12,8 +12,11 @@ A Telegram bot that executes Python plotting code and returns the generated imag
 
 ## Prerequisites
 
-- Docker installed on your server
+- **Docker Desktop** installed on your system ([Download here](https://www.docker.com/products/docker-desktop/))
 - A Telegram Bot Token (obtained from BotFather)
+- Git (for cloning the repository)
+
+**Note**: If you don't have Docker installed, you can also run the bot directly with Python (see Alternative Setup section below).
 
 ## Setup and Deployment
 
@@ -105,6 +108,51 @@ python test_plot.py
 
 This will generate three PNG files in the current directory that you can examine to verify the plotting functionality.
 
+## Alternative Setup (Without Docker)
+
+If you prefer to run the bot directly with Python instead of using Docker:
+
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package installer)
+
+### Setup Steps
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd plotter
+   ```
+
+2. **Create a virtual environment** (recommended):
+   ```bash
+   python -m venv venv
+   
+   # On Windows:
+   venv\Scripts\activate
+   
+   # On macOS/Linux:
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment variables**:
+   Create a `.env` file with your bot token:
+   ```
+   TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+   ```
+
+5. **Run the bot**:
+   ```bash
+   python bot.py
+   ```
+
+**Note**: When running without Docker, the bot will use system fonts. Times New Roman may not be available, so the bot will fall back to available serif fonts.
+
 ## Server Maintenance
 
 ### Updating the Bot
@@ -157,22 +205,27 @@ docker restart plotting-bot
 
 ## Troubleshooting
 
+### Docker Installation Issues
+If you get "docker command not found" error:
+- Install Docker Desktop from [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
+- Make sure Docker Desktop is running
+- Restart your terminal after installation
+- On Windows, you may need to enable WSL2
+
 ### Font Issues
-
 If plots are not using Times New Roman font:
-
-1. Check the Docker build logs for any font installation errors
-2. Verify that the font path in the code matches the actual path in the container
-3. You may need to modify the Dockerfile to use a different method for installing the font
+- **With Docker**: The bot uses Liberation Serif as a fallback, which provides similar appearance
+- **Without Docker**: The bot will use system fonts; install Times New Roman on your system if needed
+- Check the logs for font configuration messages
+- The bot will automatically fall back to available serif fonts
 
 ### Bot Not Responding
-
 If the bot is not responding:
-
-1. Check the container logs for errors
-2. Verify that the bot token is correct
-3. Ensure the container has internet access
-4. Restart the container
+- **With Docker**: Check container logs with `docker logs plotting-bot`
+- **Without Docker**: Check the terminal output for error messages
+- Verify that the bot token is correct in your `.env` file
+- Ensure your system has internet access
+- Try restarting the bot
 
 ## License
 
