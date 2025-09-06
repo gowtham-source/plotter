@@ -48,7 +48,7 @@ async def run_plot_code(code):
     if not is_safe:
         error_type, formatted_error = format_error_message(safety_error)
         return [], formatted_error
-    
+
     # Execute the code in the sandbox
     plot_files, output, error = execute_plot_code(code)
     
