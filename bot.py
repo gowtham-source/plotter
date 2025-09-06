@@ -14,6 +14,8 @@ import logging.config
 import os.path
 
 if os.path.exists('logging.conf'):
+    # Create logs directory if it doesn't exist
+    os.makedirs('logs', exist_ok=True)
     logging.config.fileConfig('logging.conf')
 else:
     logging.basicConfig(
