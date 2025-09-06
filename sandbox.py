@@ -92,13 +92,13 @@ def execute_plot_code(code_string):
     
     with sandbox_environment() as (temp_dir, stdout_capture, stderr_capture):
         try:
-            # Prepare the namespace for execution
+            # Create a restricted namespace for code execution
             namespace = {
                 'plt': plt,
                 'matplotlib': matplotlib,
-                'fm': fm,
                 'np': None,  # Will be imported by user code if needed
                 'pd': None,  # Will be imported by user code if needed
+                'temp_dir': temp_dir,  # Make temp_dir available to the code
                 '__name__': '__main__',
                 '__file__': None,
             }
