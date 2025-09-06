@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  plotting-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telegram-plotting-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
