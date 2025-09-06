@@ -16,6 +16,9 @@ logger = logging.getLogger(__name__)
 # List of allowed modules for the sandbox
 ALLOWED_MODULES = {
     'matplotlib', 'matplotlib.pyplot', 'matplotlib.font_manager',
+    'matplotlib.transforms', 'matplotlib.patches', 'matplotlib.lines',
+    'matplotlib.colors', 'matplotlib.cm', 'matplotlib.ticker',
+    'matplotlib.dates', 'matplotlib.gridspec', 'matplotlib.axes',
     'numpy', 'pandas', 'scipy', 'seaborn', 'math', 'random',
     'datetime', 'collections', 'itertools', 'functools',
     'os.path', 're', 'json', 'csv'
