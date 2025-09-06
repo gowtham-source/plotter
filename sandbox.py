@@ -19,9 +19,14 @@ ALLOWED_MODULES = {
     'matplotlib.transforms', 'matplotlib.patches', 'matplotlib.lines',
     'matplotlib.colors', 'matplotlib.cm', 'matplotlib.ticker',
     'matplotlib.dates', 'matplotlib.gridspec', 'matplotlib.axes',
+    'matplotlib.backends', 'matplotlib.backend_bases',
     'numpy', 'pandas', 'scipy', 'seaborn', 'math', 'random',
     'datetime', 'collections', 'itertools', 'functools',
-    'os.path', 're', 'json', 'csv'
+    'os.path', 're', 'json', 'csv',
+    # Core Python modules needed by matplotlib
+    '_io', 'io', 'sys', 'os', 'warnings', 'weakref', 'gc',
+    'threading', 'time', 'struct', 'array', 'ctypes',
+    'pickle', 'copyreg', 'copy', 'types', 'operator'
 }
 
 # List of forbidden functions/attributes
@@ -34,7 +39,15 @@ FORBIDDEN_ATTRIBUTES = {
 
 # Restricted import function
 def restricted_import(name, globals=None, locals=None, fromlist=(), level=0):
+    # Allow relative imports within matplotlib
+    if level > 0 and globals and globals.get('__package__', '').startswith('matplotlib'):
+        return original_import(name, globals, locals, fromlist, level)
+    
+    # Check if the module is in allowed list or is a submodule of an allowed module
     if name not in ALLOWED_MODULES and not any(name.startswith(f"{module}.") for module in ALLOWED_MODULES):
+        # Special case for matplotlib submodules that might be imported with different paths
+        if name.startswith('matplotlib.') or (globals and globals.get('__package__', '').startswith('matplotlib')):
+            return original_import(name, globals, locals, fromlist, level)
         raise ImportError(f"Import of module '{name}' is not allowed in the sandbox")
     
     # Use the original __import__ function for allowed modules
