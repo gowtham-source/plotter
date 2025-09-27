@@ -144,8 +144,24 @@ def execute_plot_code(code_string):
 
 # Function to check code for potentially harmful operations
 def check_code_safety(code_string):
-    # Check for forbidden attributes/functions
-    for forbidden in FORBIDDEN_ATTRIBUTES:
+    import re
+    
+    # Check for forbidden functions using word boundaries to avoid false positives
+    # This prevents matching "eval" in words like "evaluation" or "medieval"
+    forbidden_functions = ['eval', 'exec', 'compile', 'globals', 'locals', 'open']
+    for forbidden in forbidden_functions:
+        # Use word boundaries (\b) to match complete words only
+        pattern = r'\b' + re.escape(forbidden) + r'\b'
+        if re.search(pattern, code_string):
+            return False, f"Code contains forbidden function: {forbidden}"
+    
+    # Check for forbidden attributes and modules (these can be partial matches)
+    forbidden_modules = [
+        '__import__', 'import_module', 'system', 'popen', 'subprocess',
+        'os.system', 'os.popen', 'os.spawn', 'os.exec', 'subprocess.run',
+        'subprocess.call', 'subprocess.Popen', 'pty.spawn', 'importlib.import_module'
+    ]
+    for forbidden in forbidden_modules:
         if forbidden in code_string:
             return False, f"Code contains forbidden function: {forbidden}"
     
